@@ -1,0 +1,21 @@
+Sprint deadline: 9/13
+
+Tasks:
+
+Olivia Dorencz:
+	Setup database for keeping track of sensors and linking them to usernames (likely using SQL)
+	
+Andres Rojas: 
+	Implement login functionality (likely using Google API)
+
+Group tasks:
+	Determine requirements for simulated sensors
+		warn if temperature is above 120 degrees or below 40 degrees
+		warn if humidity is above 55% or below 35%
+	Look into using Google App Engine for hosting web application and Google Cloud Services for storing information
+	Look into graphing APIs (specifically in Python 2.7)
+
+Backlog tasks:
+	simulate sensors (humidity and temperature), will likely be semi-random but following trends. Python 2.7
+	Graphical user interface
+	
