@@ -2,6 +2,7 @@ import os
 
 import cloudstorage
 from google.appengine.api import app_identity
+from google.appengine.ext import ndb
 
 from datetime import datetime
 import webapp2
@@ -22,16 +23,28 @@ def get_bucket( user, sensor_type, sensor_id ):
         bucket_name = '/' + bucket_name + '/' + user + '/' + sensor_type + '_' + sensor_id
         return bucket_name
 
+class user(ndb.Model):
+	uid = ndb.IntegerProperty()
+	email = ndb.StringProperty( indexed = False )
+
+class sensor( ndb.Model ):
+	sensor_type = ndb.StringProperty( indexed = False )
+	sensorid = ndb.IntegerProperty()
+	user = ndb.StructuredProperty( user )
 
 class MainPage(webapp2.RequestHandler):
 	#bucket = get_bucket( 'Olivia' )
 	#self.create_file( bucket )
 	#self.read_file( bucket )
-
+		
         def get( self ):
-            bucket = get_bucket( 'Olivia', 'humid', '1' )
-            self.create_file(bucket)
-            self.read_file(bucket)
+		
+		username = user.query( user.email == 'test@test.com' )
+		uid = username.get()
+		
+        	bucket = get_bucket( 'Olivia', 'humid', '1' )
+        	self.create_file(bucket)
+        	self.read_file(bucket)
             
         def read_file( self, filename ):
                 with cloudstorage.open( filename ) as sensor_file:
