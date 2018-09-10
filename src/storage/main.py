@@ -25,12 +25,12 @@ def get_bucket( user, sensor_type, sensor_id ):
 
 class user(ndb.Model):
 	uid = ndb.IntegerProperty()
-	email = ndb.StringProperty( indexed = False )
+	email = ndb.StringProperty(  )
 
 class sensor( ndb.Model ):
-	sensor_type = ndb.StringProperty( indexed = False )
+	sensor_type = ndb.StringProperty( )
 	sensorid = ndb.IntegerProperty()
-	user = ndb.StructuredProperty( user )
+	userprof = ndb.StructuredProperty( user )
 
 class MainPage(webapp2.RequestHandler):
 	#bucket = get_bucket( 'Olivia' )
@@ -38,10 +38,19 @@ class MainPage(webapp2.RequestHandler):
 	#self.read_file( bucket )
 		
         def get( self ):
-		
-		username = user.query( user.email == 'test@test.com' )
-		uid = username.get()
-		
+	        username = user( uid = 1, email = 'test@test.com' )
+                username.put()
+                test = user.query( user.uid == 31 )
+                
+                if not test.get():
+                    self.response.write( 'No match' )
+                for unit in test:
+                    self.response.write( unit.email )
+
+	        sensor_id = sensor.query( sensor.userprof == username )
+                if not sensor_id.get():
+                    self.response.write( 'no sensor' )
+
         	bucket = get_bucket( 'Olivia', 'humid', '1' )
         	self.create_file(bucket)
         	self.read_file(bucket)
