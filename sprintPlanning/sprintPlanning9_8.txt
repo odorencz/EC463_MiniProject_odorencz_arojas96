@@ -3,8 +3,9 @@ Sprint deadline: 9/13
 Tasks:
 
 Olivia Dorencz:
-	Setup database for keeping track of sensors and linking them to usernames (likely using SQL)
-	
+	Setup database for keeping track of sensors and linking them to usernames (likely using SQL) - CNA
+	9/10 update: cloud services
+
 Andres Rojas: 
 	Implement login functionality (likely using Google API)
 
@@ -18,4 +19,10 @@ Group tasks:
 Backlog tasks:
 	simulate sensors (humidity and temperature), will likely be semi-random but following trends. Python 2.7
 	Graphical user interface
+
+9/10 update:
+	O.Dorencz: database determined to be unnecessary for referencing small amounts of data, moving this to Closed No Action
+	           to makeup for loss of sprint goal, will be moving Google Cloud services into my sprint goals. By end of sprint should 
+		   have ability to read and write to cloud buckets as well as framework for how these files will be organized.
+		   This will require input re: login to determine best method of obtaining some unique user id	   
 	
