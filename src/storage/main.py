@@ -3,9 +3,13 @@ import os
 import cloudstorage
 from google.appengine.api import app_identity
 from google.appengine.ext import ndb
+from google.appengine.api import users
 
 from datetime import datetime
 import webapp2
+import jinja2
+
+import urllib
 
 #import webtest
 import main
@@ -16,6 +20,11 @@ cloudstorage.set_default_retry_params(
 	cloudstorage.RetryParams(
 		initial_delay=0.2, max_delay=5.0, backoff_factor=2, max_retry_period=15)
 		)
+
+JINJA_ENVIRONMENT = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
+        extensions=['jinja2.ext.autoescape'],
+        autoescape=True)
 
 def get_bucket( user, sensor_type, sensor_id ):
 	bucket_name = os.environ.get(
@@ -38,8 +47,10 @@ class MainPage(webapp2.RequestHandler):
 	#self.read_file( bucket )
 		
         def get( self ):
-	        username = user( uid = 1, email = 'test@test.com' )
-                username.put()
+                username = self.request.get( 'username' )
+                self.response.write( username )
+	        User = user( uid = 1, email = username )
+                User.put()
                 test = user.query( user.uid == 31 )
                 
                 if not test.get():
@@ -47,7 +58,7 @@ class MainPage(webapp2.RequestHandler):
                 for unit in test:
                     self.response.write( unit.email )
 
-	        sensor_id = sensor.query( sensor.userprof == username )
+	        sensor_id = sensor.query( sensor.userprof == User )
                 if not sensor_id.get():
                     self.response.write( 'no sensor' )
 
