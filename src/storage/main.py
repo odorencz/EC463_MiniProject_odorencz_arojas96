@@ -39,7 +39,7 @@ class user(ndb.Model):
 class sensor( ndb.Model ):
 	sensor_type = ndb.StringProperty( )
 	sensorid = ndb.IntegerProperty()
-	userprof = ndb.StructuredProperty( user )
+	user = ndb.StringProperty( )
 
 class MainPage(webapp2.RequestHandler):
 	#bucket = get_bucket( 'Olivia' )
@@ -47,27 +47,56 @@ class MainPage(webapp2.RequestHandler):
 	#self.read_file( bucket )
 		
         def get( self ):
+                found_user = False
+
                 username = self.request.get( 'username' )
-                self.response.write( username )
-	        User = user( uid = 1, email = username )
-                User.put()
-                test = user.query( user.uid == 31 )
+                sid = self.request.get( 'sensor_id' )
+                
+                template = JINJA_ENVIRONMENT.get_template( 'index.html' )
+                if username == '':
+                    self.response.write( template.render() )
+                    return
+
+                
+	        User = user( email = username )
+
+                test = user.query( user.email == username )
                 
                 if not test.get():
-                    self.response.write( 'No match' )
-                for unit in test:
-                    self.response.write( unit.email )
+                    self.response.write( 'No match found, add user to database?' )
+                    template = JINJA_ENVIRONMENT.get_template( 'nouser.html' )
+                    template_keys = { 'user': username,
+                                      'user_found': False }
+                    self.response.render( template.render( template_keys ) )
+                    return
+                    #User.put()
 
-	        sensor_id = sensor.query( sensor.userprof == User )
+	        sensor_id = sensor.query( sensor.user == username, sensorid = sid )
+                
                 if not sensor_id.get():
-                    self.response.write( 'no sensor' )
+                    self.response.write( 'No sensors, add new sensor?' )
+                    template = JINJA_ENVIRONMENT.get_template( 'nosensor.html' )
+                    template_keys = { 'user': username,
+                                      'user_found': True }
+                    self.response.render( template.render( template_keys )
+                    return
+
+                if username == 'newsensor@sensor.com' and not sensor_id.get():
+                    self.response.write( 'Creating new sensor for ' + username )
+                    new_sensor = sensor( sensor_type = 'humidity', sensorid = 1, user = username )
+                    new_sensor.put()
+
+                sensor_find = sensor.query( sensor.user == username )
+                found = sensor_find.get()
+                stype = 'none'
+                if found:
+                    stype = found.sensor_type
 
         	bucket = get_bucket( 'Olivia', 'humid', '1' )
         	self.create_file(bucket)
         	self.read_file(bucket)
-                template_values = {
-                        'user' : User.email,
-                }
+                template_values = { 'user': username,
+                                    'sensor_id': sid }
 		template = JINJA_ENVIRONMENT.get_template( 'index.html' )
 		self.response.write( template.render( template_values  ))
 
