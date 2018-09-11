@@ -65,6 +65,9 @@ class MainPage(webapp2.RequestHandler):
         	bucket = get_bucket( 'Olivia', 'humid', '1' )
         	self.create_file(bucket)
         	self.read_file(bucket)
+		template = JINJA_ENVIRONMENT.get_template( 'index.html' )
+		self.response.write( template.render( template_values )
+
             
         def read_file( self, filename ):
                 with cloudstorage.open( filename ) as sensor_file:
