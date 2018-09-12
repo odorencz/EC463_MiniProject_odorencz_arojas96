@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+  <head>
+    <!-- [START css] -->
+    <!-- [END css] -->
+    <style type="text/css">
+      body {
+        padding-top: 40px;
+        padding-bottom: 40px;
+        background-color: #f5f5f5;
+      }
+      blockquote {
+        margin-bottom: 10px;
+        border-left-color: #bbb;
+      }
+      form {
+        margin-top: 10px;
+      }
+      .form-signin input[type="text"] {
+        font-size: 16px;
+        height: auto;
+        margin-bottom: 15px;
+        padding: 7px 9px;
+      }
+      .row {
+        margin-left: 0px;
+        margin-top: 10px;
+        overflow: scroll;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+	  		<b>No user found for {{ user }}. Add new user?
+      </div>
+
+      <hr>
+      <form>
+      	<input type = "radio" name = "yes_no" checked>Yes</input>
+      	<input type = "radio" name = "yes_no" checked>No</input>
+				<input type = "submit" value = "Submit">
+      </form>
+      <a href="{{ url|safe }}">{{ url_linktext }}</a>
+    </div>
+  </body>
+</html>
+{% endautoescape %}
