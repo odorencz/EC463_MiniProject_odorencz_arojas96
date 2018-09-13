@@ -1,0 +1,21 @@
+9/13 Planning:
+
+Tasks accomplished in previous sprint:
+	working prototypes for login, databasing, and google cloud services (buckets for storing sensor information, though not yet simulated)
+
+
+Sprint tasks:
+
+	Olivia: Generate data, random number generator
+		every 10 minutes
+	Andres: Graph it and display GUI
+		update automatically
+		show last 6 hours
+
+
+
+
+
+Backlog: Combine everything, make it pretty
+
+Deadline: Monday, 12pm 9/17
