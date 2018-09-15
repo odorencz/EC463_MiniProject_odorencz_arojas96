@@ -34,21 +34,22 @@
     <div class="container">
       <!-- [START greetings] -->
       <div class="row">
-	  <b>{{ user }}
-	  </b> viewing sensor: {{ sensor_id  }}
+	  <b>Welcome {{ username }}!</b>
+	  <br>
+	  You have {{ num_sensor }} sensors.
+	  <br>
+	  What would you like to do?
+	  <form action = "/addsensor/">
+		 <input value = "Add new sensor" type="submit">
+		 <input value = "{{ user }}" name="username" type="hidden">
+	  </form>
+	  <form action = "/viewsensor/">
+		 <input value = "{{ user }}" name="username" type="hidden">
+		 <input value = "View existing sensor" type="submit">
+	  </form>
+	  <br>
+	  <a href = "{{ logout }}">Logout</a>
       </div>
-      <!-- [END greetings] -->
-
-      <hr>
-
-      <form>username:
-        <input value="{{ user  }}" name="username">
-	<br>sensor number:
-	<input value="{{ sensor_id }}" name = "sensor_id">
-        <input type="submit" value="Submit">
-      </form>
-
-      <a href="{{ url|safe }}">{{ url_linktext }}</a>
     </div>
   </body>
 </html>
