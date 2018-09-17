@@ -1,11 +1,15 @@
 from google.appengine.api import users
+import webapp2
+import urllib
 
-class MainPage(webapp2.RequestHandler):
+class LoginPage(webapp2.RequestHandler):
     def get(self):
         # Start user_details
         user = users.get_current_user()
         if user:
             nickname = user.nickname()
+            parameters = { 'username': nickname }
+            self.redirect( '/?' + urllib.urlencode( parameters ) )
             logout_url = users.create_logout_url('/')
             greeting = 'Welcome, {}! (<a href="{}">sign out</a>)'.format(
                 nickname, logout_url)
@@ -25,10 +29,4 @@ class AdminPage(webapp2.RequestHandler):
             else:
                 self.response.write('You are not an administrator.')
         else:
-            self.response.write('You are not logged in.')
-
-
-app = webapp2.WSGIApplication([
-    ('/', MainPage),
-    ('/admin', AdminPage)
-], debug=True)
+            self.response.write('You are not an administrator.')

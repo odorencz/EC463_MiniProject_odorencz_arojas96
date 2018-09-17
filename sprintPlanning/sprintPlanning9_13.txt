@@ -1,0 +1,14 @@
+9/13 Planning:
+
+Sprint tasks:
+
+	Olivia: Generate data, random number generator
+		every 10 minutes
+	Andres: Graph it and display GUI
+		update automatically
+		show last 6 hours
+
+Deadline: Monday, 12pm 9/17
+
+Backlog: Combine everything, make it pretty
+

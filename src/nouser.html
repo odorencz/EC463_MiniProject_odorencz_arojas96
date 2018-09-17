@@ -33,13 +33,14 @@
   <body>
     <div class="container">
       <div class="row">
-	  		<b>No user found for {{ user }}. Add new user?
+	  		<b>No user found for {{ username }}. Add new user?
       </div>
 
       <hr>
       <form>
-      	<input type = "radio" name = "yes_no" checked>Yes</input>
-      	<input type = "radio" name = "yes_no" checked>No</input>
+      	<input type = "radio" name = "yes_add" value = "Yes" checked>Yes</input>
+      	<input type = "radio" name = "yes_add" value = "No">No</input>
+	<input name = "username" value = "{{ username }}" type = "hidden">
 				<input type = "submit" value = "Submit">
       </form>
       <a href="{{ url|safe }}">{{ url_linktext }}</a>

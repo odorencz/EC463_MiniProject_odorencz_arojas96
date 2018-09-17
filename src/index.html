@@ -32,17 +32,24 @@
   </head>
   <body>
     <div class="container">
+      <!-- [START greetings] -->
       <div class="row">
-	  		<b>No sensors found for {{ user }}. Add new sensor?
+	  <b>Welcome {{ username }}!</b>
+	  <br>
+	  You have {{ num_sensor }} sensors.
+	  <br>
+	  What would you like to do?
+	  <form action = "/addsensor/">
+		 <input value = "Add new sensor" type="submit">
+		 <input value = "{{ user }}" name="username" type="hidden">
+	  </form>
+	  <form action = "/viewsensor/">
+		 <input value = "{{ user }}" name="username" type="hidden">
+		 <input value = "View existing sensor" type="submit">
+	  </form>
+	  <br>
+	  <a href = "{{ logout }}">Logout</a>
       </div>
-
-      <hr>
-      <form>
-      	<input type = "radio" name = "yes_no" checked>Yes</input>
-      	<input type = "radio" name = "yes_no" checked>No</input>
-				<input type = "submit" value = "Submit">
-      </form>
-      <a href="{{ url|safe }}">{{ url_linktext }}</a>
     </div>
   </body>
 </html>
