@@ -7,7 +7,8 @@ env_variables:
 handlers:
 - url: /blobstore.*
   script: blobstore.app
-
+- url: /test.*
+  script: sensors.app
 - url: /.*
   script: main.app
 
@@ -16,4 +17,5 @@ libraries:
   version: latest
 - name: jinja2
   version: latest
- 
+
+

@@ -32,24 +32,28 @@
   </head>
   <body>
     <div class="container">
-      <!-- [START greetings] -->
       <div class="row">
-	  <b>Welcome {{ username }}!</b>
-	  <br>
-	  You have {{ num_sensor }} sensors.
-	  <br>
-	  What would you like to do?
-	  <form action = "/addsensor/">
-		 <input value = "Add new sensor" type="submit">
-		 <input value = "{{ user }}" name="username" type="hidden">
-	  </form>
-	  <form action = "/viewsensor/">
-		 <input value = "{{ user }}" name="username" type="hidden">
-		 <input value = "View existing sensor" type="submit">
-	  </form>
-	  <br>
-	  <a href = "{{ logout }}">Logout</a>
-      </div>
+	      <b>Hello {{ username }}! You have {{ num_sensor }} sensors.</b>
+	{% if num_sensor == 0 %}
+	<br> Please add a sensor.
+	<form action = "/addsensor/" >
+		<input type = "submit" value = "Add sensor" >
+	</form>
+	</div>
+	{% else %}
+    </div>
+	Which sensor would you like to view?
+	<br>
+      <form>
+	{% for sensnum in range(1, num_sensor+1) %}
+	<input type = "radio" value = "{{ sensnum }}" name = "pick_sensor">{{ sensnum }} </input>
+	<br>
+	{% endfor %}
+	<input type = "submit" value = "Submit">
+      </form>
+      {% endif %}
+      <br>
+      <a href = "/">Home</a> | <a href = "{{ logout }}">Logout</a>
     </div>
   </body>
 </html>

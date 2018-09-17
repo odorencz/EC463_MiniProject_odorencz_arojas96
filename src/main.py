@@ -1,5 +1,5 @@
 import os
-
+from google.appengine.api import taskqueue
 import cloudstorage
 from google.appengine.api import app_identity
 from google.appengine.ext import ndb
@@ -20,8 +20,9 @@ import main
 
 #PROJECT = os.environ('GCLOUD_PROJECT'
 
-humid_master = os.environ.get( 'BUCKET_NAME', app_identity.get_default_gcs_bucket_name() ) + '_h'
-temp_master = os.environ.get( 'BUCKET_NAME', app_identity.get_default_gcs_bucket_name() ) + '_t'
+humid_master = '/' + os.environ.get( 'BUCKET_NAME', app_identity.get_default_gcs_bucket_name() ) + '/master_h'
+temp_master = '/' + os.environ.get( 'BUCKET_NAME', app_identity.get_default_gcs_bucket_name() ) + '/master_t'
+total_users = 0
 
 cloudstorage.set_default_retry_params(
 	cloudstorage.RetryParams(
@@ -51,6 +52,7 @@ class sensor( ndb.Model ):
 
 class NewUser( webapp2.RequestHandler ):
     def get( self ):
+        global total_users
         username = self.request.get( 'username' )
             
         parameters = { 'username': username }
@@ -59,8 +61,9 @@ class NewUser( webapp2.RequestHandler ):
         add = self.request.get( 'yes_add' )
         if add == 'Yes':
             username = self.request.get( 'username' )
-            User = user( email = username, num_sensor = 0 )
+            User = user( email = username, num_sensor = 0, uid = total_users )
             User.put()
+            total_users = total_users + 1  
             parameters = { 'username': username }
             self.redirect( '/?' + urllib.urlencode( parameters ) )
         elif add == 'No':
@@ -84,20 +87,32 @@ class NewSensor( webapp2.RequestHandler ):
             username = users.get_current_user().nickname()
             User = user.query( user.email == username )
             user_profile = User.get()
+            uid = user_profile.uid
             sensor_num = user_profile.num_sensor + 1
+            
             new_sensor = sensor( sensor_type = 'humidity', sensorid = sensor_num, user = username )
             new_sensor.put()
-            humid_path = get_bucket( user = username, sensor_type = 'h', sensor_id = sensor_num )
+            humid_path = get_bucket( user = str( uid ), sensor_type = 'h', sensor_id = sensor_num )
             create_file( humid_path )
-           
-            f = cloudstorage.open( humid_master, "a" )
+            
+            f = cloudstorage.open( humid_master, "r" )
+            contents = f.read()
+            f.close()
+            f = cloudstorage.open( humid_master, "w" )
+            f.write( contents )
             f.write( humid_path )
             f.close()
 
             new_sensor = sensor( sensor_type = 'temp', sensorid = sensor_num, user = username )
-            temp_path = get_bucket( user = username, sensor_type = 't', sensor_id = sensor_num )
+            temp_path = get_bucket( user = str( uid ), sensor_type = 't', sensor_id = sensor_num )
             create_file( temp_path )
-            f = cloudstorage.open( temp_master, "a" )
+            
+            f = cloudstorage.open( temp_master, "r" )
+            contents = f.read()
+            f.close()
+            f = cloudstorage.open( temp_master, "w" )
+            
+            f.write( contents )
             f.write( temp_path )
             f.close()
 
@@ -131,7 +146,8 @@ class MainPage(webapp2.RequestHandler):
 	#bucket = get_bucket( 'Olivia' )
 	#self.create_file( bucket )
 	#self.read_file( bucket )
-    	
+        ndb.delete_multi( user.query().fetch( keys_only = True ) )
+        ndb.delete_multi( sensor.query().fetch( keys_only = True ) )
         def get( self ):
                 curr_user = users.get_current_user()
                 if not curr_user:
@@ -165,29 +181,34 @@ def create_file( filename ):
             { 'x-goog-meta-foo': 'foo', 'x-goog-meta-bar': 'bar'}, retry_params = write_retry_params) as sensor_file:
         sensor_file.close()
 
-def update_buckets():
-    for i in Humidity:
-        i.writeData()
-    for j in Temp:
-        j.writeData()
-
-def wait_update():
-    f = cloudstorage.open( humid_master, "r" )
-    for line in f.read_lines():
-        print( line )
-        sensor_file = sensors.HumiditySensor( line )
+def clearLogs():
+    f = cloudstorage.open( humid_master, "w" )
     f.close()
-    f = cloudstorage.open( temp_master, "r" )
-    for line in f.read_lines():
-        print( line )
-        sensor_file = sensors.TempSensor( line )
-    sleep( 600 )
+    f = cloudstorage.open( temp_master, "w" )
+    f.close()
 
-    
+clearLogs()
+found = False
+try:
+    found =  cloudstorage.stat( humid_master )
+except Exception as e:
+    found = False
+
+if not found:
+    create_file( humid_master )
+
+try:
+    found = cloudstorage.stat( temp_master )
+except Exception as e:
+    found = False
+
+if not found:
+    create_file( temp_master )
 
 app = webapp2.WSGIApplication(
     [('/', MainPage), ('/newuser/', NewUser), ('/login', login_testing.LoginPage), ( '/admin/', login_testing.AdminPage )
-    , ( '/addsensor/', NewSensor ), ( '/viewsensor/', ViewSensor ) ], debug = True )
+    , ( '/addsensor/', NewSensor ), ( '/viewsensor/', ViewSensor ), ('/update', sensors.UpdateFileHandler) ], debug = True )
 
 
-background_thread.start_new_background_thread( wait_update, () )
+task = taskqueue.add( url = '/test' )
+

@@ -30,3 +30,4 @@ class AdminPage(webapp2.RequestHandler):
                 self.response.write('You are not an administrator.')
         else:
             self.response.write('You are not an administrator.')
+
