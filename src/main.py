@@ -138,8 +138,16 @@ class ViewSensor( webapp2.RequestHandler ):
         template = JINJA_ENVIRONMENT.get_template( 'viewsensor.html' )
         parameters = { 'username': username, 'num_sensor': num_sensor, 'logout': logout_url }
         self.response.write( template.render( parameters ) )
-
+        
         pick_sensor = self.request.get( 'pick_sensor' )
+        if pick_sensor != "":
+            username = users.get_current_user().nickname()
+            user_profile = user.query( user.email == username ).get()
+            
+            parameters = { 'username': username, 'pick_sensor': pick_sensor, 'logout': logout_url }
+            template = JINJA_ENVIRONMENT.get_template( 'graphing/temp_graph.html' )
+            self.response.write( "You want to view sensor " + pick_sensor )
+            self.response.write( template.render( parameters ) )
 
 
 class MainPage(webapp2.RequestHandler):
