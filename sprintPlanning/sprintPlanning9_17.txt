@@ -1,0 +1,14 @@
+9/17 Planning:
+
+Tasks completed in previous sprint: 
+	sensor simulation writes to files in google cloud storage.
+	this updates every 10 minutes based on random numbers that increase or decrease temp within base range
+	beginning for sensor graphing in javascript, still needs to be completed
+
+Sprint debt: complete graphing by separating into two graphs (humidity and temp)
+
+Sprint tasks:
+	Olivia - Integrate all HTML and python files together
+	Andres - finish tasks from previous sprint, add functionality to be able to access data from cloud files and add that generated data directly to the graph
+
+Deadline: 9/20
