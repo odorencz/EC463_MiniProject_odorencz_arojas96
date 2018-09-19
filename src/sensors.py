@@ -16,7 +16,7 @@ class HumiditySensor():
         f = cloudstorage.open( self.path, "r" )
     
         file_contents = []
-        count = 2160
+        count = 360
         num_lines = 0
         line = f.readline()
         while line:
@@ -47,7 +47,7 @@ class HumiditySensor():
         else:
             lasttime, lasthumid = lastline.split(",")
 
-        new_value = random.uniform( -5, 5 ) + float( lasthumid )
+        new_value = random.uniform( -1, 1 ) + float( lasthumid )
 
         if new_value > 100:
             new_value = 100
@@ -73,7 +73,7 @@ class TempSensor():
 
     
         file_contents = []
-        count = 2160
+        count = 360
         num_lines = 0
 
         line = f.readline()
@@ -108,7 +108,7 @@ class TempSensor():
         int_hour = int( hour ) + 20
         if int_hour > 24:
             int_hour = int_hour - 24
-        new_value = random.uniform( -5, 5 ) + float( lasttemp )
+        new_value = random.uniform( -1, 1 ) + float( lasttemp )
         f.write( str( int_hour ) + datetime.datetime.now().time().strftime( ":%M:%S" ) + ',' + str( new_value ) )
         
         f.close()
@@ -156,7 +156,7 @@ class UpdateFileHandler( webapp2.RequestHandler ):
     def post( self ):
         while( True ):
             wait_update()
-            time.sleep( 10 )
+            time.sleep( 60 )
 
 app = webapp2.WSGIApplication( [ ('/test', UpdateFileHandler) ], debug = True )
 
