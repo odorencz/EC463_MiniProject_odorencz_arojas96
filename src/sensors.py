@@ -6,6 +6,7 @@ import time
 import webapp2
 from google.appengine.api import background_thread
 from google.appengine.api import app_identity
+
 class HumiditySensor():
     def __init__( self, path ):
         self.path = path
@@ -53,7 +54,11 @@ class HumiditySensor():
         elif new_value < 0:
             new_value = 0
         
-        f.write( datetime.datetime.now().time().strftime( "%d:%m:%y" ) + ',' + str( new_value ) )
+        hour = datetime.datetime.now().time().strftime( "%I" )
+        int_hour = int( hour ) + 20
+        if ( int_hour > 24 ):
+            int_hour = int_hour - 24
+        f.write( str( int_hour ) + datetime.datetime.now().time().strftime( ":%M:%S" ) + ',' + str( new_value ) )
         
         f.close()
 
@@ -99,8 +104,12 @@ class TempSensor():
         else:
             lasttime, lasttemp = lastline.split( "," )
 
+        hour = datetime.datetime.now().time().strftime( "%I" )
+        int_hour = int( hour ) + 20
+        if int_hour > 24:
+            int_hour = int_hour - 24
         new_value = random.uniform( -5, 5 ) + float( lasttemp )
-        f.write( datetime.datetime.now().time().strftime( "%d:%m:%y" ) + ',' + str( new_value ) )
+        f.write( str( int_hour ) + datetime.datetime.now().time().strftime( ":%M:%S" ) + ',' + str( new_value ) )
         
         f.close()
 
