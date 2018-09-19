@@ -1,0 +1,59 @@
+<html>
+{% autoescape true %}
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Time', 'Temp'],
+	  {% for temp_data in temp.split(';') %}
+		 ['{{ temp_data.split(',')[0] }}',  {{ temp_data.split(',')[1] }}],
+          
+	  {% endfor %}
+        ]);
+
+        var data2 = google.visualization.arrayToDataTable([
+          ['Time', 'Humidity'],
+          {% for humid_data in humid.split(';') %}
+	  ['{{ humid_data.split(',')[0] }}',  {{ humid_data.split(',')[1] }}],
+	  {% endfor %}
+        ]);
+
+        var options = {
+          title: 'Temperature',
+          legend: { position: 'bottom' }
+        };
+
+        var options2 = {
+          title: 'Humidity',
+          legend: { position: 'bottom' }
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+        var chart2 = new google.visualization.LineChart(document.getElementById('other_chart'));
+
+        chart.draw(data, options);
+
+        chart2.draw(data2, options2);
+      }
+    </script>
+  </head>
+  <body>
+	<b>Hi {{ username }}! You are viewing sensor {{ pick_sensor }}.</b>
+	<br>
+	Sensors update every 60 seconds and show up to 6 hours of data. Old data will be cleared. Please refresh page to show new data.
+	<table class = "columns">
+		<tr>
+			<td><div id="curve_chart" style="width: 500px; height: 500px"></div>
+			<td><div id="other_chart" style="width: 500px; height: 500px"></div>
+		</tr>
+	</table>
+  </body>
+  <br>
+  <a href = "/">Home</a> | <a href = "{{ logout }}">Logout</a>
+</html>
+{% endautoescape %}

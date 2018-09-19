@@ -1,0 +1,17 @@
+indexes:
+
+- kind: user
+  ancestor: no
+  properties:
+  - name: uid
+  - name: email
+    direction: desc
+
+- kind: sensor
+  ancestor: no
+  properties:
+  - name: sensor_type
+  - name: sensorid
+  - name: userprof
+    direction: desc
+
