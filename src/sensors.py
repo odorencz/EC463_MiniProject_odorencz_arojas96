@@ -15,7 +15,7 @@ class HumiditySensor():
         f = cloudstorage.open( self.path, "r" )
     
         file_contents = []
-        count = 36
+        count = 2160
         num_lines = 0
         line = f.readline()
         while line:
@@ -53,7 +53,7 @@ class HumiditySensor():
         elif new_value < 0:
             new_value = 0
         
-        f.write( datetime.datetime.now().strftime( "%d/%m/%y" ) + ',' + str( new_value ) )
+        f.write( datetime.datetime.now().time().strftime( "%d:%m:%y" ) + ',' + str( new_value ) )
         
         f.close()
 
@@ -68,7 +68,7 @@ class TempSensor():
 
     
         file_contents = []
-        count = 36
+        count = 2160
         num_lines = 0
 
         line = f.readline()
@@ -100,7 +100,7 @@ class TempSensor():
             lasttime, lasttemp = lastline.split( "," )
 
         new_value = random.uniform( -5, 5 ) + float( lasttemp )
-        f.write( datetime.datetime.now().strftime( "%d/%m/%y" ) + ',' + str( new_value ) )
+        f.write( datetime.datetime.now().time().strftime( "%d:%m:%y" ) + ',' + str( new_value ) )
         
         f.close()
 
@@ -118,26 +118,26 @@ def wait_update():
     humid_added = len( humidList )
     temp_added = len ( tempList )
     
-    line = f.readline()
-    while line:
-        if line not in humidList:
-            humidList.append( line )
-            new_humid = HumiditySensor( line )
+    contents = f.read()
+    for file_name in contents.split( ';' ):
+        if file_name not in humidList and len(file_name)>5:
+            humidList.append( file_name )
+            new_humid = HumiditySensor( path = file_name )
             humidObjList.append( new_humid )
             humid_added = humid_added + 1
-        line = f.readline()
     f.close()
 
     f = cloudstorage.open( temp_master, 'r' )
-    line = f.readline()
-    while line:
-        if line not in tempList:
-            tempList.append( line )
-            new_temp = TempSensor( line )
+    contents = f.read()
+    for file_name in contents.split( ';' ):
+        if file_name not in tempList and len(file_name)>5:
+            tempList.append( file_name )
+            new_temp = TempSensor( path = file_name )
             tempObjList.append( new_temp )
             temp_added = temp_added + 1
-        line = f.readline()
+    f.close()
 
+    
     for i in humidObjList:
         i.writeData()
     for i in tempObjList:
@@ -147,7 +147,7 @@ class UpdateFileHandler( webapp2.RequestHandler ):
     def post( self ):
         while( True ):
             wait_update()
-            time.sleep( 600 )
+            time.sleep( 10 )
 
 app = webapp2.WSGIApplication( [ ('/test', UpdateFileHandler) ], debug = True )
 

@@ -67,7 +67,8 @@ class NewUser( webapp2.RequestHandler ):
             parameters = { 'username': username }
             self.redirect( '/?' + urllib.urlencode( parameters ) )
         elif add == 'No':
-            self.redirect( '/#'  )
+            logout = users.create_logout_url('/')
+            self.redirect( logout )
             
 class NewSensor( webapp2.RequestHandler ):
     def get( self ):
@@ -76,9 +77,10 @@ class NewSensor( webapp2.RequestHandler ):
 
         User = user.query( user.email == username )
         user_profile = User.get()
-    
+        logout = users.create_logout_url('/')
         parameters = { 'username': username,
-                        'num_sensor': user_profile.num_sensor }
+                        'num_sensor': user_profile.num_sensor,
+                        'logout': logout}
         template = JINJA_ENVIRONMENT.get_template( 'addsensor.html' )
         self.response.write( template.render( parameters ) )
         add = self.request.get( 'yes_no' )
@@ -95,12 +97,12 @@ class NewSensor( webapp2.RequestHandler ):
             humid_path = get_bucket( user = str( uid ), sensor_type = 'h', sensor_id = sensor_num )
             create_file( humid_path )
             
+            
             f = cloudstorage.open( humid_master, "r" )
-            contents = f.read()
+            contents = f.read() + ";" + humid_path
             f.close()
             f = cloudstorage.open( humid_master, "w" )
             f.write( contents )
-            f.write( humid_path )
             f.close()
 
             new_sensor = sensor( sensor_type = 'temp', sensorid = sensor_num, user = username )
@@ -108,12 +110,12 @@ class NewSensor( webapp2.RequestHandler ):
             create_file( temp_path )
             
             f = cloudstorage.open( temp_master, "r" )
-            contents = f.read()
+            contents = f.read() + ";" + temp_path
+            print( contents )
             f.close()
             f = cloudstorage.open( temp_master, "w" )
             
             f.write( contents )
-            f.write( temp_path )
             f.close()
 
             new_sensor.put()
@@ -142,13 +144,52 @@ class ViewSensor( webapp2.RequestHandler ):
         pick_sensor = self.request.get( 'pick_sensor' )
         if pick_sensor != "":
             username = users.get_current_user().nickname()
-            user_profile = user.query( user.email == username ).get()
-            
-            parameters = { 'username': username, 'pick_sensor': pick_sensor, 'logout': logout_url }
-            template = JINJA_ENVIRONMENT.get_template( 'graphing/temp_graph.html' )
-            self.response.write( "You want to view sensor " + pick_sensor )
-            self.response.write( template.render( parameters ) )
+            logout_url = users.create_logout_url( '/' )
+            parameters = { 'username': username, 'pick_sensor' : pick_sensor, 'logout': logout_url }
+            self.redirect( '/graph/?' + urllib.urlencode( parameters ) )
 
+class GraphPage( webapp2.RequestHandler ):
+    def get( self ):
+        username = users.get_current_user().nickname()
+        logout_url = users.create_logout_url( '/')
+        pick_sensor = self.request.get( 'pick_sensor' )
+        humid, temp = GetData( pick_sensor, username )
+        parameters = { 'username': username, 'pick_sensor': pick_sensor, 'logout': logout_url, 'temp': temp, 'humid': humid }
+        template = JINJA_ENVIRONMENT.get_template( 'graphing/temp_graph.html' )
+        self.response.write( template.render( parameters ) )
+
+def GetData( sensor_num, username ):
+    user_prof = user.query( user.email == username).get()
+    uid = user_prof.uid
+    humid_data = ""
+    temp_data = ""
+    h_path = get_bucket( user = str( uid ), sensor_type = 'h', sensor_id = int( sensor_num ) )
+    t_path = get_bucket( user = str( uid ), sensor_type = 't', sensor_id = int( sensor_num ) )
+    f = cloudstorage.open( h_path, "r" )
+    line = f.readline()
+    first = True
+    while line:
+        if len( line ) > 5:
+            if first:
+                humid_data = line
+                first = False
+            else:
+                humid_data = humid_data + ";" + line
+        line = f.readline()
+    f.close()
+    f = cloudstorage.open( t_path, "r" )
+    line = f.readline()
+    first = True
+    while line:
+        if len( line ) > 5:
+            if first:
+                temp_data = line
+                first = False
+            else:
+                temp_data = temp_data + ";" + line
+        line = f.readline()
+    f.close()
+    return ( humid_data, temp_data )
 
 class MainPage(webapp2.RequestHandler):
 	#bucket = get_bucket( 'Olivia' )
@@ -215,7 +256,7 @@ if not found:
 
 app = webapp2.WSGIApplication(
     [('/', MainPage), ('/newuser/', NewUser), ('/login', login_testing.LoginPage), ( '/admin/', login_testing.AdminPage )
-    , ( '/addsensor/', NewSensor ), ( '/viewsensor/', ViewSensor ), ('/update', sensors.UpdateFileHandler) ], debug = True )
+    , ( '/addsensor/', NewSensor ), ( '/viewsensor/', ViewSensor ), ('/update', sensors.UpdateFileHandler), ('/graph/', GraphPage) ], debug = True )
 
 
 task = taskqueue.add( url = '/test' )

@@ -18,7 +18,7 @@ class LoginPage(webapp2.RequestHandler):
             greeting = '<a href="{}">Sign in</a>'.format(login_url)
         # End user_details
         self.response.write(
-            '<html><body>{}</body></html>'.format(greeting))
+            "<html><body><b>Welcome to Olivia and Andres's sensor viewer!</b><br> {}</body></html>".format(greeting))
 
 class AdminPage(webapp2.RequestHandler):
     def get(self):

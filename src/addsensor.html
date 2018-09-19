@@ -31,20 +31,17 @@
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="row">
+    <div>
 	      <b>{{ num_sensor }} sensors found for {{ username }}. Add new sensor? </b>
-      </div>
-
-      <hr>
       <form>
       	<input type = "radio" name = "yes_no" value = "Yes" checked>Yes</input>
 	<input type = "radio" name = "yes_no" value = "No">No</input>
 	<input type = "hidden" name = "username" value = "{{ username }}">
 				<input type = "submit" value = "Submit">
       </form>
-      <a href="{{ url|safe }}">{{ url_linktext }}</a>
     </div>
+    <br>
+    <a href = "/">Home</a> | <a href = "{{ logout }}">Logout</a>
   </body>
 </html>
 {% endautoescape %}

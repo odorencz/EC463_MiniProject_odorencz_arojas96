@@ -1,4 +1,5 @@
 <html>
+{% autoescape true %}
   <head>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
@@ -8,31 +9,26 @@
       function drawChart() {
         var data = google.visualization.arrayToDataTable([
           ['Time', 'Temp'],
-          ['6 hours ago',  97],
-          ['5 hours ago',  60],
-          ['4 hours ago',  54],
-          ['3 hours ago',  75],
-          ['2 hours ago',  98],
-          ['1 hours ago',  65]
+	  {% for temp_data in temp.split(';') %}
+		 ['{{ temp_data.split(',')[0] }}',  {{ temp_data.split(',')[1] }}],
+          
+	  {% endfor %}
         ]);
 
         var data2 = google.visualization.arrayToDataTable([
           ['Time', 'Humidity'],
-          ['6 hours ago',  97],
-          ['5 hours ago',  67],
-          ['4 hours ago',  45],
-          ['3 hours ago',  70],
-          ['2 hours ago',  68],
-          ['1 hours ago',  74]
+          {% for humid_data in humid.split(';') %}
+	  ['{{ humid_data.split(',')[0] }}',  {{ humid_data.split(',')[1] }}],
+	  {% endfor %}
         ]);
 
         var options = {
-          title: 'Room Temperature',
+          title: 'Temperature',
           legend: { position: 'bottom' }
         };
 
         var options2 = {
-          title: 'Room Humidity',
+          title: 'Humidity',
           legend: { position: 'bottom' }
         };
 
@@ -47,7 +43,17 @@
     </script>
   </head>
   <body>
-    <div id="curve_chart" style="width: 900px; height: 500px"></div>
-    <div id="other_chart" style="width: 900px; height: 500px"></div>
+	<b>Hi {{ username }}! You are viewing sensor {{ pick_sensor }}.</b>
+	<br>
+	Sensors update every 10 seconds and show up to 6 hours of data. Old data will be cleared.
+	<table class = "columns">
+		<tr>
+			<td><div id="curve_chart" style="width: 500px; height: 500px"></div>
+			<td><div id="other_chart" style="width: 500px; height: 500px"></div>
+		</tr>
+	</table>
   </body>
+  <br>
+  <a href = "/">Home</a> | <a href = "{{ logout }}">Logout</a>
 </html>
+{% endautoescape %}
