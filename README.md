@@ -13,7 +13,7 @@ Additional Google services used in this project are [Google Cloud Datastore](htt
 ## Team Roles
 
 * Olivia Dorencz: Creating the home page linking all pages through HTML, implementing the database for user profiles and keeping track of their sensors via Google Cloud Datastore and Google Cloud Storage, and generate sensor data for displaying in the graphs.
-* Andres Rojas: Integrating the Google sign-in for user profiles on the webapp and displaying temperature and humidity in a graph format using Google Charts.
+* Andres Rojas: Integrating the Google sign-in for user profiles on the webapp, and displaying temperature and humidity in a graph format using Google Charts.
 
 ## Instructions for use
 
