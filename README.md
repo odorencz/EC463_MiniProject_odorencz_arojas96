@@ -10,6 +10,11 @@ This application was created for EC463 Senior Design for Electrical and Computer
 
 Additional Google services used in this project are [Google Cloud Datastore](https://cloud.google.com/datastore/docs/concepts/overview) (a NoSql based database) and [Google Cloud Storage](https://cloud.google.com/storage/).
 
+## Team Roles
+
+* Olivia Dorencz: Creating the home page linking all pages through HTML, implementing the database for user profiles and keeping track of their sensors via Google Cloud Datastore and Google Cloud Storage, and generate sensor data for displaying in the graphs.
+* Andres Rojas: Integrating the Google sign-in for user profiles on the webapp and displaying temperature and humidity in a graph format using Google Charts.
+
 ## Instructions for use
 
 User must have an account on Google App Engine for development on this program. 
